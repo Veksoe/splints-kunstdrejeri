@@ -1,0 +1,20 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<FeatureSection>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    FeatureSection content = Model.Content;
+}
+<div class="lg:flex lg:gap-16">
+    <div class="lg:w-1/2">
+        <h2 class="detailFont text-5xl lg:text-8xl">@content.Heading</h2>
+        <h3 class="text-xl lg:text-3xl mb-4">@content.Subheading</h3>
+        <p>@content.Body</p>
+        @if(content.Button != null && content.Button.Url != null)
+        {
+            <a href="@content.Button.Url" class="btn">@content.Button.Name</a>
+        }
+    </div>
+    @if(content.Image != null)
+    {
+        <img src="@content.Image.GetCropUrl()" alt="@content.Image.Name" class="max-h-[350px] lg:max-h-[500px] w-full lg:w-1/2" />
+    }
+</div>

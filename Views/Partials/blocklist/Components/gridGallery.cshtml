@@ -1,0 +1,32 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<GridGallery>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    GridGallery content = Model.Content;
+}
+<h2 class="text-2xl mb-2 text-center  ">@content.Heading</h2>
+<div class="grid grid-cols-4  grid-rows-3 gap-2 h-[450px] lg:h-[50vh]">
+    @if(content.Image1 != null)
+    {
+        <img src="@content.Image1.GetCropUrl()" alt="Alternate Text" class="col-start-1 col-end-3 row-start-1 row-end-3 w-full h-full" />
+    }
+
+    @if(content.Image2 != null)
+    {
+        <img src="@content.Image2.GetCropUrl()" alt="Alternate Text" class="col-start-3 col-end-6 row-start-1 row-end-2 w-full h-full" />
+    }
+
+    @if(content.Image3 != null)
+    {
+        <img src="@content.Image3.GetCropUrl()" alt="Alternate Text" class="col-start-1 col-end-2 row-start-3 row-end-4 w-full h-full" />
+    }
+
+    @if(content.Image4 != null)
+    {
+        <img src="@content.Image4.GetCropUrl()" alt="Alternate Text" class="col-start-2 col-end-3 row-start-3 row-end-4 w-full h-full" />
+    }
+    @if(content.Image5 != null)
+    {
+        <img src="@content.Image5.GetCropUrl()" alt="Alternate Text" class="col-start-3 col-end-6 row-start-2 row-end-4 w-full h-full" />
+    }
+
+</div>

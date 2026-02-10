@@ -1,0 +1,12 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentPage>
+@{
+    Layout = "Shared/_Layout.cshtml";
+    var blocks = Model.Value<BlockListModel>("content") ?? new BlockListModel(new List<BlockListItem>());
+}
+
+@if(blocks.Any())
+{
+    @await Html.PartialAsync("blocklist/default", blocks)
+}

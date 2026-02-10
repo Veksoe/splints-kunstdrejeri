@@ -1,0 +1,11 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<Embed>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    Embed content = Model.Content;
+}
+@if(content.EmbedLink != null && !string.IsNullOrWhiteSpace(content.EmbedLink))
+{
+    <div>
+       @Html.Raw(content.EmbedLink)
+    </div>
+}

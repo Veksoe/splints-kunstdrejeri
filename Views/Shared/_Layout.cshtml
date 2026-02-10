@@ -1,0 +1,167 @@
+﻿@using System.Text
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    var site = (FrontPage)Model.Root()!;
+    var culture = Model.GetCultureFromDomains() ?? "da";
+
+
+    var companyName = site.Value<string>("companyName") ?? string.Empty;
+    var defaultMetaDescription = site.Value<string>("defaultMetaDescription") ?? string.Empty;
+    var logo = site.Value<IPublishedContent>("logo");
+    var favicon = site.Value<IPublishedContent>("favicon");
+
+    var backgroundColor = site.Value<string>("backgroundColor");
+    var primaryColor = site.Value<string>("primaryColor");
+    var secondaryColor = site.Value<string>("secondaryColor");
+    var accentColor = site.Value<string>("accentColor");
+    var onBackgroundColor = site.Value<string>("onBackgroundColor");
+    var onPrimaryColor = site.Value<string>("onPrimaryColor");
+    var onSecondaryColor = site.Value<string>("onSecondaryColor");
+    var onAccentColor = site.Value<string>("onAccentColor");
+
+    var fontFamilyHeading = site.Value<string>("headingFontFamily");
+    var fontFamilyBaseText = site.Value<string>("baseTextFontFamily");
+    var fontFamilyDetail = site.Value<string>("detailFontFamily");
+
+    string headingFontCss = !string.IsNullOrWhiteSpace(fontFamilyHeading) ? $"'{fontFamilyHeading}', system-ui, sans-serif" : "system-ui, sans-serif";
+    string baseFontCss = !string.IsNullOrWhiteSpace(fontFamilyBaseText) ? $"'{fontFamilyBaseText}', system-ui, sans-serif" : "system-ui, sans-serif";
+    string detailFontCss = !string.IsNullOrWhiteSpace(fontFamilyDetail) ? $"'{fontFamilyDetail}', system-ui, sans-serif" : headingFontCss;
+
+    string googleFontUrl = null;
+
+    var googleFontFamilies = new Dictionary<string, string>();
+
+    AddGoogleFont(googleFontFamilies, fontFamilyHeading);
+    AddGoogleFont(googleFontFamilies, fontFamilyBaseText);
+    AddGoogleFont(googleFontFamilies, fontFamilyDetail);
+
+    if(googleFontFamilies.Any())
+    {
+        var sb = new StringBuilder("https://fonts.googleapis.com/css2?");
+
+        foreach(var font in googleFontFamilies)
+        {
+            var familyEncoded = font.Key.Replace(" ", "+");
+
+            sb.Append($"family={familyEncoded}:wght@400;600;700;900&");
+        }
+
+        sb.Append("display=swap");
+
+        googleFontUrl = sb.ToString();
+    }
+
+
+
+    var titlePrefix = Model.Value<string>("titlePrefix");
+    var pageTitle =
+    !string.IsNullOrWhiteSpace(titlePrefix)
+        ? $"{titlePrefix} – {companyName}"
+        : companyName;
+    var robotsMeta = Model.Value<string>("metaRobots");
+    if(string.IsNullOrWhiteSpace(robotsMeta))
+    {
+        robotsMeta = "index, follow";
+    }
+    var metaDescription = Model.Value<string>("metaDescription");
+    if(string.IsNullOrWhiteSpace(metaDescription))
+    {
+        metaDescription = defaultMetaDescription;
+    }
+
+    var OGImage = Model.Value<IPublishedContent>("openGraphImage") ?? logo;
+    var OGTitle = !string.IsNullOrWhiteSpace(Model.Value<string>("openGraphTitle")) ? Model.Value<string>("openGraphTitle") : pageTitle;
+    var OGDescription = !string.IsNullOrWhiteSpace(Model.Value<string>("openGraphDescription")) ? Model.Value<string>("openGraphDescription") : metaDescription;
+
+    var overwriteBackgroundColor = Model.Value<string>("overwriteBackgroundColor");
+    var overwriteOnBackgroundColor = Model.Value<string>("overwriteOnBackgroundColor");
+
+
+    var showBreadcrumbs = Model.Value<bool>("showBreadcrumbs"); /** TODO implement*/
+
+    var resolvedBackgroundColor =
+    !string.IsNullOrWhiteSpace(overwriteBackgroundColor)
+        ? overwriteBackgroundColor
+        : backgroundColor;
+
+    var resolvedOnBackgroundColor =
+    !string.IsNullOrWhiteSpace(overwriteOnBackgroundColor)
+        ? overwriteOnBackgroundColor
+        : onBackgroundColor;
+}
+
+<!DOCTYPE html>
+<html lang="@culture">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@pageTitle</title>
+    <link rel="icon" type="image/x-icon" href="@favicon.Url()">
+
+    <meta name="description" content="@metaDescription" />
+    <meta property="og:title" content="@OGTitle" />
+    <meta property="og:description" content="@OGDescription" />
+    <meta property="og:image" content="@OGImage.Url()" />
+    <meta name="robots" content="@robotsMeta" />
+
+    <style>
+        :root {
+            --font-heading: @Html.Raw(headingFontCss);
+            --font-base: @Html.Raw(baseFontCss);
+            --font-detail: @Html.Raw(detailFontCss);
+            --background-color: @resolvedBackgroundColor;
+            --primary-color: @primaryColor;
+            --secondary-color: @secondaryColor;
+            --accent-color: @accentColor;
+            --on-background-color: @resolvedOnBackgroundColor;
+            --on-primary-color: @onPrimaryColor;
+            --on-secondary-color: @onSecondaryColor;
+            --on-accent-color: @onAccentColor;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-…hash…" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/css/custom-swiper.css" />
+    @if(!string.IsNullOrWhiteSpace(googleFontUrl))
+    {
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="@googleFontUrl" rel="stylesheet" />
+    }
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+</head>
+<body class="backgroundColor min-h-screen flex flex-col">
+    @await Html.PartialAsync("Header", Model)
+
+    <main class="flex-1">
+        @RenderBody()
+    </main>
+    @await Html.PartialAsync("Footer", Model)
+
+
+    <script src="/assets/js/header.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-element-bundle.min.js" defer></script>
+</body>
+</html>
+
+@functions {
+    void AddGoogleFont(
+        IDictionary<string, string> dict,
+        string family
+    )
+    {
+        if(string.IsNullOrWhiteSpace(family))
+            return;
+
+        var normalizedFamily = family.Trim();
+        if(!dict.ContainsKey(normalizedFamily))
+        {
+            dict[normalizedFamily] = "400;600;700;900"; // vi hardcoder weights
+        }
+
+    }
+}
+

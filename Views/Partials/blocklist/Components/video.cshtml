@@ -1,0 +1,12 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<Video>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    Video content = Model.Content;
+}
+@if(content.VideoUrl != null)
+{
+    <video autoplay muted loop playsinline
+           class="w-full h-full object-cover max-h-[600px] ">
+        <source src="@content.VideoUrl.Url()" type="video/mp4" />
+    </video>
+}

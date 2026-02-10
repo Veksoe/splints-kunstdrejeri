@@ -1,0 +1,54 @@
+﻿@using System.Text
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    var site = (FrontPage)Model.Root()!;
+    var logo = site.Value<IPublishedContent>("logo");
+    var hideFooter = Model.Value<bool>("hideFooter");
+
+    var hideLogoInFooter = site.Value<bool>("hideLogoInFooter");
+
+    var address = site.Value<string>("address");
+    var phoneNumber = site.Value<string>("phoneNumber");
+    var email = site.Value<string>("email");
+    var facebookLink = site.Value<string>("facebookLink");
+    var facebookLinkLabel = !string.IsNullOrWhiteSpace(site.Value<string>("facebookLinkLabel")) ? site.Value<string>("facebookLinkLabel") : "Facebook";
+    var copyrightText = site.Value<string>("copyrightText");
+}
+<footer class="@(hideFooter ? "hidden" : "") primaryBgColor p-4 ">
+    <div class="lg:flex container">
+        <div class="w-64 mx-auto lg:mx-4">
+            @if(site?.Logo != null && !hideLogoInFooter)
+            {
+                <img src="@logo.Url()" />
+            }
+        </div>
+        <div class="flex flex-col gap-1 items-center mt-4 onPrimaryColor lg:items-start lg:justify-center">
+            <address class="flex flex-col gap-1 items-center not-italic lg:items-start">
+                <p>
+                    <span class="sr-only">Adresse:</span>
+                    <i class="fa-solid fa-location-dot mr-1"></i>
+                    @address
+                </p>
+
+                <p>
+                    <span class="sr-only">Telefon:</span>
+                    <i class="fa-solid fa-phone mr-1"></i>
+                    <a href="tel:@phoneNumber">@phoneNumber</a>
+                </p>
+
+                <p>
+                    <span class="sr-only">Email:</span>
+                    <i class="fa-solid fa-envelope mr-1"></i>
+                    <a href="mailto:@email">@email</a>
+                </p>
+            </address>
+
+            <nav aria-label="Sociale medier">
+                <i class="fa-brands fa-facebook-f mr-1"></i>
+                <a href="@facebookLink" target="_blank" rel="noopener noreferrer">@facebookLinkLabel</a>
+            </nav>
+
+        </div>
+    </div>
+    <p class="text-sm text-center onPrimaryColor mt-4 lg:mt-0"><i class="fa-regular fa-copyright mr-1 text-xs"></i>@copyrightText</p>
+</footer>

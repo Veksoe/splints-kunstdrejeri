@@ -1,0 +1,68 @@
+﻿@using System.Text
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    var site = (FrontPage)Model.Root()!;
+    var logo = site.Value<IPublishedContent>("logo");
+    var hideLogoInHeader = site.Value<bool>("hideLogoInHeader");
+
+    var hideHeader = Model.Value<bool>("hideHeader");
+
+    var navigation = site.Value<IEnumerable<IPublishedContent>>("navigation")
+                     ?? Enumerable.Empty<IPublishedContent>();
+}
+<header class="secondaryBgColor px-4 py-2 h-20 shadow-lg z-2">
+    <div class="container flex item-center justify-between h-full headingFont">
+        <!-- Logo -->
+        <div class="h-full">
+            @if(logo != null && !hideLogoInHeader)
+            {
+                <a href="@site.Url()">
+                    <img src="@logo.Url()" alt="@site.Name" class="w-auto h-full" />
+                </a>
+            }
+        </div>
+
+        <!-- Desktop navigation -->
+        <nav class="hidden lg:flex gap-6 h-full w-full justify-center items-center text-lg">
+            @foreach(var navigationPage in navigation)
+            {
+                var isActive = navigationPage.Id == Model.Id;
+
+                <a href="@navigationPage.Url()"
+                   class="@(isActive ? "active" : "") onSecondaryColor">
+                    @navigationPage.Name
+                </a>
+            }
+        </nav>
+
+        <button id="menuToggle"
+                class="lg:hidden relative onSecondaryColor text-4xl"
+                aria-expanded="false"
+                aria-controls="mobileMenu">
+            <i class="fa-solid fa-bars drop-shadow-md"></i>
+        </button>
+
+        <nav id="mobileMenu" class="fixed inset-0 secondaryBgColor translate-x-full transition-transform duration-300 z-40 lg:hidden">
+            <div class="bg-white/50 absolute h-full w-full top-0 -z-1"></div>
+            <div class="p-6">
+                <button id="menuClose"
+                        class="absolute top-4 right-4 text-4xl"
+                        aria-label="Luk menu">
+                    <i class="fa-solid fa-xmark drop-shadow-md"></i>
+                </button>
+            </div>
+            <div class="p-4 mx-auto my-4 text-center">
+                @foreach(var navigationPage in navigation)
+                {
+                    var isActive = navigationPage.Id == Model.Id;
+
+                    <a href="@navigationPage.Url()"
+                       class="@(isActive ? "active" : "") text-xl">
+                        @navigationPage.Name
+                    </a>
+                }
+            </div>
+
+        </nav>
+    </div>
+</header>

@@ -1,0 +1,25 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<TextAndImage>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    TextAndImage content = Model.Content;
+    var settings = Model.Settings;
+
+    var addBackground = settings.Value<bool>("addBackground");
+    var imagePlacement = settings.Value<bool>("imagePlacement");
+
+}
+<div class="flex flex-col lg:flex-row lg:items-stretch  @(imagePlacement ? "flex-col-reverse lg:flex-row-reverse " : "") @(addBackground ? "" : "lg:gap-16") ">
+    @if(content.Image != null)
+    {
+        <img src="@content.Image.GetCropUrl()" alt="@content.Image.Name" class=" lg:w-1/2 max-h-[600px]" />
+    }
+
+    <div class="lg:w-1/2 lg:flex flex-col justify-center  @(addBackground ? "accentBgColor p-4 onAccentColor" : "mt-2") ">
+        <h2 class="text-2xl mb-2 text-center">@content.Heading</h2>
+        <p>@content.Body</p>
+        @if(content.Button != null && content.Button.Url != null)
+        {
+            <a href="@content.Button.Url" class="btn">@content.Button.Name</a>
+        }
+    </div>
+</div>

@@ -1,0 +1,67 @@
+@using System.Text
+
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListModel>
+@{
+    if(Model?.Any() != true)
+    { return; }
+}
+
+@foreach(var block in Model)
+{
+    if(block?.ContentKey == null)
+    { continue; }
+    var data = block.Content;
+
+    var classList = new List<string> { };
+    var styleBuilder = new StringBuilder();
+
+    var settings = block.Settings;
+
+    var anchorName = settings?.Value<string>("anchorName") ?? string.Empty;
+    var fullWidthContainer = settings?.Value<bool>("fullWidth") ?? false;
+
+    if(settings.Value<string>("componentTextColor") is string textColor && !string.IsNullOrWhiteSpace(textColor))
+    {
+        styleBuilder.Append($"color: {textColor};");
+    }
+
+    if(settings.Value<string>("componentBackgroundColor") is string bgColor && !string.IsNullOrWhiteSpace(bgColor))
+    {
+        styleBuilder.Append($"background-color: {bgColor};");
+    }
+
+    if(settings.Value<string>("paddingTop") is string paddingTop)
+    {
+        classList.Add($"pt-{paddingTop}");
+    }
+    if(settings.Value<string>("paddingBottom") is string paddingBottom)
+    {
+        classList.Add($"pb-{paddingBottom}");
+    }
+
+    if(settings.Value<bool>("hideWhenPublished"))
+    {
+        classList.Add("hidden");
+    } else
+    {
+        if(settings.Value<bool>("hideOnDesktop"))
+        {
+            classList.Add("lg:hidden");
+        }
+        if(settings.Value<bool>("hideOnMobile"))
+        {
+            classList.Add("hidden lg:block");
+        }
+    }
+
+    var style = styleBuilder.Length > 0 ? styleBuilder.ToString() : string.Empty;
+
+    <section class="@string.Join(" ", classList) @(fullWidthContainer ? "" : "container px-4")" style="@style">
+
+        <div class="block-list-item  lg:px-0 my-8 lg:my-16 " id="@anchorName">
+            @await Html.PartialAsync("blocklist/Components/" + data.ContentType.Alias, block)
+
+        </div>
+    </section>
+}
+

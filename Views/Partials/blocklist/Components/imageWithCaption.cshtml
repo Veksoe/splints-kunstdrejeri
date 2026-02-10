@@ -1,0 +1,29 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<ImageWithCaption>>
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    ImageWithCaption content = Model.Content;
+    var media = content.Media;
+
+}
+<div class="h-[300px] lg:h-[550px] relative mb-16">
+    @if(content.Media != null)
+    {
+        var mediaType = media.ContentType.Alias;
+        if(mediaType == "Image")
+        {
+            <img src="@media.GetCropUrl()"
+                 alt=""
+                 class=" w-full h-full object-cover" />
+        } else if(mediaType == "umbracoMediaVideo")
+        {
+            <video autoplay muted loop playsinline
+                   class="w-full h-full object-cover ">
+                <source src="@media.Url()" type="video/mp4" />
+            </video>
+        }
+        <p class="absolute w-[80%] lg:w-[55%] primaryBgColor onPrimaryColor p-4 lg:p-8 detailFont text-2xl lg:text-4xl -bottom-10 rounded">
+            @content.Caption
+        </p>
+    }
+    
+</div>

@@ -1,0 +1,38 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<ContentBoxes>>
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    ContentBoxes content = Model.Content;
+    var settings = Model.Settings;
+    var boxes = content.Boxes; 
+    var boxCount = boxes.Count();
+    var backgroundImage = settings?.Value<MediaWithCrops>("backgroundImage");
+    var backgroundStyle = backgroundImage != null
+       ? $"background-image: url('{backgroundImage.GetCropUrl()}')"
+       : null;
+    var gridColsClass = boxCount switch
+    {
+        1 => "lg:grid-cols-1",
+        2 => "lg:grid-cols-2",
+        _ => "lg:grid-cols-3"
+    };
+}
+
+@if(boxes != null && boxes.Any())
+{
+    <div class=" relative overflow-hidden  @(backgroundImage != null ? "px-6 pb-10 lg:px-16 lg:pb-16" : "")">
+        <h2 class="text-2xl text-center mb-2">@content.Heading</h2>
+        <div class="grid gap-8 @gridColsClass">
+            @foreach(var box in boxes)
+            {
+                @await Html.PartialAsync("blocklist/Components/ContentBox", box)
+            }
+        </div>
+        @if(backgroundStyle != null)
+        {
+            <div class="absolute inset-0 top-24 bg-cover bg-center -z-10"
+                 style="@backgroundStyle">
+            </div>
+        }
+    </div>
+}
